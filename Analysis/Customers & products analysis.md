@@ -14,7 +14,7 @@
 Let's collaborate on running the queries using Oracle 19c
 
 ## 1. List the top 10 customers that had the highest revenue?
-### (Get all customers that had the same total revenue)
+#### (Get all customers that had the same total revenue)
 ```sql
 With amt_per_cusid as (
     Select 
@@ -97,7 +97,7 @@ group by
 ## 3. List of returning customers who purchased again.
 ```sql
 SELECT
-    o1.customer_id,
+    distinct (o1.customer_id),
     o1.order_date AS order_date_1,
     o2.order_date AS order_date_2
 FROM orders o1
@@ -106,4 +106,98 @@ JOIN orders o2
  AND o1.order_date <  o2.order_date
 ORDER BY o1.customer_id, o1.order_date;
 ```
-## Result set (preview)
+## Result set
+### There is no returning customer
+
+
+```sql
+-- Update the order_date of 1 order_id to check the code:
+Update orders
+set order_date = '11-JAN-26'
+where order_id = 4000001
+-- Rewrite code:
+SELECT
+    distinct(o1.customer_id),
+    o1.order_date AS order_date_1,
+    o2.order_date AS order_date_2
+FROM orders o1
+JOIN orders o2
+  ON o1.customer_id = o2.customer_id
+ AND o1.order_date <  o2.order_date
+ORDER BY o1.customer_id, o1.order_date;
+```
+## Result set
+| CUSTOMER_ID | ORDER_DATE_1 | ORDER_DATE_2 |
+|-------------|--------------|--------------|
+| 579         | 10-JAN-26    | 11-JAN-26    |
+
+##### After update the dataset, the code is running correctly and find out that there is 1 customer (customer_id = 579) buy products in 10-Jan-26 and return to buy again in 11-jan-16
+---
+## 4. List the top 10 best-selling products.
+#### (Get all products that had the same total quantity)
+```sql
+select 
+    pro.product_id,
+    pro.product_code,
+    pro.product_name,
+    ID_qtt.total_quantity
+from( 
+    select 
+        product_id, 
+        sum(quantity) total_quantity,
+        rank () over(order by sum(quantity) desc) rnk
+    from order_items
+    group by product_id 
+    ) ID_qtt
+join products pro
+    on ID_qtt.product_id = pro.product_id
+where ID_qtt.rnk <= 10
+```
+## Result set
+| PRODUCT_ID | PRODUCT_CODE | PRODUCT_NAME | TOTAL_QUANTITY |
+|------------|--------------|--------------|----------------|
+| 5          | 5            | Product 5    | 1800000        |
+| 10         | 10           | Product 10   | 1800000        |
+| 15         | 15           | Product 15   | 1800000        |
+| 20         | 20           | Product 20   | 1800000        |
+| 25         | 25           | Product 25   | 1800000        |
+| 30         | 30           | Product 30   | 1800000        |
+| 35         | 35           | Product 35   | 1800000        |
+| 40         | 40           | Product 40   | 1800000        |
+| 45         | 45           | Product 45   | 1800000        |
+| 50         | 50           | Product 50   | 1800000        |
+---
+## 5. List the top 10 products that had the highest revenue.
+```sql
+select 
+    pro.product_id,
+    pro.product_code,
+    pro.product_name,
+    pro_rev.rev, 
+    pro_rev.rnk
+from(
+    select 
+        product_id, 
+        sum(line_price) rev,
+        rank ()over (order by sum(line_price) desc) rnk
+    from order_items
+    group by product_id
+    ) pro_rev   
+join products pro
+    on pro.product_id = pro_rev.product_id
+where pro_rev.rnk <=10
+```
+## Result set
+| PRODUCT_ID | PRODUCT_CODE | PRODUCT_NAME | REV          | RNK |
+|------------|--------------|--------------|--------------|-----|
+| 45         | 45           | Product 45   | 874168200000 | 1   |
+| 50         | 50           | Product 50   | 869560200000 | 2   |
+| 40         | 40           | Product 40   | 856148400000 | 3   |
+| 5          | 5            | Product 5    | 745043400000 | 4   |
+| 15         | 15           | Product 15   | 696672000000 | 5   |
+| 35         | 35           | Product 35   | 686959200000 | 6   |
+| 49         | 49           | Product 49   | 625747320000 | 7   |
+| 39         | 39           | Product 39   | 623920440000 | 8   |
+| 25         | 25           | Product 25   | 586987200000 | 9   |
+| 23         | 23           | Product 23   | 505285200000 | 10  |
+---
