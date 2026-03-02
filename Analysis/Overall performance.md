@@ -28,7 +28,7 @@ select
 from orders
 group by order_date
 ```
-## Result set (Showing first 10 rows only for illustration)
+## Result set (Preview)
 | ORDER_DATE | SUM(TOTAL_AMOUNT) |
 |------------|-------------------|
 | 14-JAN-26  | 509833222392      |
