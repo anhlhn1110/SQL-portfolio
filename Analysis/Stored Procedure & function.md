@@ -91,6 +91,8 @@ Begin
     from orders
     where order_date between p_start_date and p_end_date
     group by customer_id;
+
+    commit;
 END;
 /
 --Call the procedure (Exp: for period from 01-Jan-26 to 10-jan-26)
