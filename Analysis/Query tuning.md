@@ -16,7 +16,8 @@ ORDER BY o1.customer_id, o1.order_date
 It takes the query 15.3s to fetch all rows
 
 **Before Optimization**
-![Before](images/before_index.png)
+<img width="740" height="131" alt="Before_index" src="https://github.com/user-attachments/assets/c8b667de-2a86-4852-b2a5-51b645430c43" />
+
 # Index Creation:
 ```sql
 --Note that the query includes an ORDER BY clause for customer_id and order_date, so try adding an index on customer_id and order_date
@@ -26,4 +27,5 @@ create index idx_orders2 on orders(customer_id, order_date)
 It takes the query 2.1s to fetch all rows
 
 **After Optimization**
-![After](images/after_index.png) 
+<img width="740" height="183" alt="After_index" src="https://github.com/user-attachments/assets/a6e58048-df36-4457-9451-a8d60bb43faa" />
+
